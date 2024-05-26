@@ -68,6 +68,9 @@ service_rate = 5
 cook_time = 2
 duration = 120
 
+# Set parameters and run simulation
+env = Environment()
+run_simulation(env, duration, arrival_rate, service_rate, cook_time)  # Simulate for 2 hours with specific arrival/service rates and cook time
 
 # Perform benchmarking
 python_execution_times = []
