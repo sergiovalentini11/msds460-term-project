@@ -35,17 +35,6 @@ def order(env, customer, order_point):
     yield env.timeout(random.expovariate(1/service_rate))
     yield order_point.put(customer)
 
-def kitchen(env, order_point, cook_time, stations):
-    while True:
-        customer = yield order_point.get()
-        available_stations = stations - len(env.process(kitchen))
-        if available_stations > 0:
-            yield env.timeout(cook_time * customer.order_size)
-            if not customer.is_takeout:
-                tables.remove(customer)
-            customer.wait_time = env.now - customer.wait_start if customer.wait_start else 0
-        else:
-            yield kitchen(env, order_point, cook_time, stations)
 
 def run_simulation(env, duration, arrival_rate, service_rate, cook_time):
     customers = []
@@ -60,6 +49,20 @@ def run_simulation(env, duration, arrival_rate, service_rate, cook_time):
     total_wait_time = sum(customer.wait_time for customer in customers if customer.wait_time)
     average_wait_time = total_wait_time / len(customers) if customers else 0
     return average_wait_time, len([c for c in customers if not c.is_takeout and not c.wait_start]), end_time - start_time
+
+tables = []
+
+def kitchen(env, order_point, cook_time, stations):
+    while True:
+        customer = yield order_point.get()
+        available_stations = stations - len(env.process(kitchen))
+        if available_stations > 0:
+            yield env.timeout(cook_time * customer.order_size)
+            if not customer.is_takeout:
+                tables.remove(customer)
+            customer.wait_time = env.now - customer.wait_start if customer.wait_start else 0
+        else:
+            yield kitchen(env, order_point, cook_time, stations)
 
 # Set parameters for benchmarking
 num_simulations = 100
