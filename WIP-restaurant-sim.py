@@ -12,6 +12,7 @@ TAKEOUT_SERVICE_RATE = 1 / 3  # Service rate for takeout orders (e.g., service t
 KITCHEN_COOK_RATE = 1 / 10  # Average time to cook an order (e.g., 10 minutes per order)
 NUM_SERVERS = 3  # Number of servers
 NUM_COOKS = 2  # Number of cooks in the kitchen
+NUM_TABLES = 10  # Number of tables in the restaurant
 
 # Function to generate random party size
 def get_party_size():
